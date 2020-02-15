@@ -171,15 +171,16 @@ var app = app || {};
 		}
 	});
 
-	var model = new app.TodoModel('react-todos');
+	app.createTodoModel('react-todos')
+	.then(model => {
+		function render() {
+			React.render(
+				<TodoApp model={model}/>,
+				document.getElementsByClassName('todoapp')[0]
+			);
+		}
 
-	function render() {
-		React.render(
-			<TodoApp model={model}/>,
-			document.getElementsByClassName('todoapp')[0]
-		);
-	}
-
-	model.subscribe(render);
-	render();
+		model.subscribe(render);
+		render();
+	})
 })();

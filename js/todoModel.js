@@ -13,19 +13,30 @@ var app = app || {};
 	// may not even be worth separating this logic
 	// out, but we do this to demonstrate one way to
 	// separate out parts of your application.
-	app.TodoModel = function (key) {
+	app.TodoModel = function (key, todos) {
 		this.key = key;
-		this.todos = Utils.store(key);
+		this.todos = todos;
 		this.onChanges = [];
 	};
+
+	app.createTodoModel = key => Utils.store(key)
+		.then(todos => new app.TodoModel('react-todos', todos))
+
 
 	app.TodoModel.prototype.subscribe = function (onChange) {
 		this.onChanges.push(onChange);
 	};
 
 	app.TodoModel.prototype.inform = function () {
-		Utils.store(this.key, this.todos);
-		this.onChanges.forEach(function (cb) { cb(); });
+		this.onChanges.forEach(function (cb) { cb(); })
+		Promise.all([
+			Utils.store(this.key, this.todos),
+			new Promise(resolve => setTimeout(resolve, 500))
+		])
+		.then(([todos]) => {
+			this.todos = todos
+			this.onChanges.forEach(function (cb) { cb(); })
+		})
 	};
 
 	app.TodoModel.prototype.addTodo = function (title) {

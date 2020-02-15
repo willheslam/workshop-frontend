@@ -27,11 +27,18 @@ var app = app || {};
 
 		store: function (namespace, data) {
 			if (data) {
-				return localStorage.setItem(namespace, JSON.stringify(data));
+				return fetch('http://localhost:8090/items', {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
+				}).then(response => response.json())
 			}
 
-			var store = localStorage.getItem(namespace);
-			return (store && JSON.parse(store)) || [];
+			return fetch('http://localhost:8090/items', {
+				method: 'GET'
+			}).then(response => response.json())
 		},
 
 		extend: function () {
